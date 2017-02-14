@@ -1,0 +1,377 @@
+<html>
+  <head>
+    <script src="../../src/NyAs3Utils.js"></script>
+    <script src="../../src/FLARArrayUtil.js"></script>
+    <script src="../../src/FLARException.js"></script>
+    <script src="../../src/FLARMat.js"></script>
+    <script src="../../src/FLARRgbPixelReader.js"></script>
+    <script src="../../src/NyARHistogramAnalyzer.js"></script>
+    <script src="../../src/NyARPca2d.js"></script>
+    <script src="../../src/NyARRasterReader.js"></script>
+    <script src="../../src/NyARTypes.js"></script>
+    <script src="../../src/FLARRasterFilter.js"></script>
+    <script src="../../src/FLARTypes.js"></script>
+    <script src="../../src/NyARLabel.js"></script>
+    <script src="../../src/FLARLabeling.js"></script>
+    <script src="../../src/NyARParam.js"></script>
+    <script src="../../src/FLARParam.js"></script>
+    <script src="../../src/NyARRaster.js"></script>
+    <script src="../../src/FLARRaster.js"></script>
+    <script src="../../src/NyARCode.js"></script>
+    <script src="../../src/FLARCode.js"></script>
+    <script src="../../src/NyARMatch.js"></script>
+    <script src="../../src/NyARRasterAnalyzer.js"></script>
+    <script src="../../src/FLARRasterAnalyzer.js"></script>
+    <script src="../../src/NyARRasterFilter.js"></script>
+    <script src="../../src/NyARSquareDetect.js"></script>
+    <script src="../../src/FLARSquareDetect.js"></script>
+    <script src="../../src/NyARTransMat.js"></script>
+    <script src="../../src/FLARTransMat.js"></script>
+    <script src="../../src/NyARUtils.js"></script>
+    <script src="../../src/NyARIdMarker.js"></script>
+    <script src="../../src/NyARPickup.js"></script>
+    <script src="../../src/FLARProcessor.js"></script>
+    <script src="../../src/NyARDetector.js"></script>
+    <script src="../../src/FLARDetector.js"></script>
+    <script src="../../src/FLARIdMarkerDetector.js"></script>
+    <script src="../../src/NyARSingleMarkerProcesser.js"></script>
+    <script src="../../src/NyUtils.js"></script>
+    <script src="../magi.js"></script>
+    
+    <style>
+      html {
+        background: white;
+        color: black;
+        font-style: arial;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        margin-top: 20px;
+        text-align: center;
+      }
+      #loading {
+        font-size: 30px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div id="loading">Aplicaci&oacute;n de Realidad Aumentada</div>
+    <br>
+    <div>SENA, Grupo de investigaci&oacute;n INAMOD, Centro de formaci&oacute;n en dise&ntilde;o, confecci&oacute;n y moda</div> 
+    
+    
+  
+    <script>
+
+      /**  dirfotos=[
+        "1_Ojaladora.jpg",
+        "2_Plana.jpg",
+        "3_Recubridora.jpg",
+        "4_Fileteadora.jpg",
+        "5_Botonadora.jpg",
+        "6_Fileteadora2.jpg",
+        "7_CortadoraCNC.jpg",
+        "8_Extendedora.jpg",
+        "9_TejedoraUnCabezal.jpg",
+        "10_Banda.jpg",
+        "11_Aguja.jpg",
+        "12_Hilo.jpg",
+        "13_Bordadora.jpg",
+        "14_Pantalla.jpg",
+        "15_Cerradora.jpg",
+        "16_Elastiquera.jpg",
+        "17_MaquinaDePespunte.jpg",
+        "18_Collarin.jpg",
+        "19_DosAgujas.jpg",
+        "20_DobleArrastre.jpg",
+        "21_TripleArrastre.jpg",
+        "22_PuntadaInvisible.jpg",
+        "23_ZigZag.jpg",
+        "23_PlanchaIndustria.jpg",
+        "25_Bastera.jpg",
+        "26_Atracadora.jpg",
+        "27_CerradoraCodo.jpg",
+        "28_Calderas.jpg",
+        "29_Pretinera.jpg",
+        "30_Enconadora.jpg",
+        "31_Dobladilladora.jpg"
+      ]; **/
+    
+      var dirfotos=[
+        "0.png","1.png","2.png","3.jpg","4.gif","5.jpg","6.png","7.jpg","8.jpg","9.jpg",
+        "10.jpg","11.jpg","12.jpg","13.jpg","14.jpg","15.jpeg","16.jpg","17.jpg","18.png","19.jpg",
+        "20.jpg","21.png","22.jpg","23.jpg","24.jpg","25.jpg","26.png","27.jpg","28.jpeg","29.jpg",
+        "30.png","31.jpg","32.jpg","33.jpg","34.jpg","35.png","36.png","37.jpg","38.jpg","39.png",
+        "40.png","41.png","42.png","43.jpg","44.jpg","45.jpg","46.jpg","47.jpg","48.jpg","49.jpg",
+        "50.jpg","51.jpg","52.jpg","53.jpg","54.jpg","55.jpg","56.png","57.jpg","58.jpg","59.png",
+        "60.jpg","61.jpg","62.gif","63.png","64.jpg","65.jpg","66.jpg","67.jpg","68.jpg","69.jpg",
+        "70.jpg","71.jpg","72.jpg","73.jpg","74.jpg","75.jpg","76.jpg","77.gif","78.jpg","79.jpg",
+        "80.jpg","81.jpg","82.jpg","83.jpg","84.png","85.gif","86.gif","87.jpg","88.jpg","89.jpg",
+        "90.jpg","91.jpg","92.jpeg","93.jpg","94.jpg","95.png","96.png","97.jpg","98.jpg","99.jpg"
+      ]; 
+      
+      var posix=[
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0
+      ];
+      
+      var posiy=[
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0
+      ];
+      
+      
+      var Escalagraf=[
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,
+        1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5
+      ];
+      
+      var posiz=[
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0
+      ];
+      
+      
+      
+      /*global photos*/
+      photos = dirfotos.map(Image.load); 
+      
+     
+      // Crear objeto video, lee la camara, pone la imagen de la 
+      // camara en el objeto video. pero no se muestra
+      var video = document.createElement('video');
+      video.width = 640; 
+      video.height = 480; 
+      video.loop = true;
+      video.volume = 0;
+      video.autoplay = true;
+      video.style.display = 'none';
+      video.controls = true;
+      navigator.webkitGetUserMedia({'video': true},
+        function(stream) {
+          var url = webkitURL.createObjectURL(stream);
+          video.src = url;
+        },
+        function(error) { alert('Usted no tiene WebRTC webcam'); }
+      );
+      
+      
+      //**********canvas para imagen a leer tags
+      var canvas = document.createElement('canvas');
+      canvas.width = video.width;
+      canvas.height = video.height;
+      canvas.style.display = 'block';
+      
+      
+      //**********Parametros JSARToolKit
+      var raster = new NyARRgbRaster_Canvas2D(canvas); //Objeto raster a partir del objeto canvas
+      var param = new FLARParam(640,480); // Variable de parametros en cuadro 640 x480
+      var detector = new FLARMultiIdMarkerDetector(param, 80); //80? variable de deteccion multiple.
+      var resultMat = new NyARTransMatResult(); //Variable de matriz de resultados
+      detector.setContinueMode(true); //detector de tags
+      var ctx = canvas.getContext('2d'); //Contexto 2D de canvas.
+      
+    
+      //***********Otro canvas para mostrar gráficas y video
+      var glCanvas = document.createElement('canvas');
+      glCanvas.width = video.width;
+      glCanvas.height = video.height;
+      document.body.appendChild(glCanvas);
+      
+      
+      display = new Magi.Scene(glCanvas);
+      display.drawOnlyWhenChanged = true;
+      param.copyCameraMatrix(display.camera.perspectiveMatrix, 10, 10000);
+      display.camera.useProjectionMatrix = true;
+    
+    
+    
+      //*********Crea canvas para superponer imagenes
+      var videoCanvas = document.createElement('canvas');
+      videoCanvas.width = video.width;
+      videoCanvas.height = video.height;
+      
+      var videoTex = new Magi.FlipFilterQuad();
+      videoTex.material.textures.Texture0 = new Magi.Texture();
+      videoTex.material.textures.Texture0.image = videoCanvas;
+      videoTex.material.textures.Texture0.generateMipmaps = false;
+      display.scene.appendChild(videoTex);
+    
+    
+    
+      var times = []; // Variable
+      var pastResults = {}; // Variable
+      var lastTime = 0; // Variable
+      var cubes = {}; // Variable
+      var images = []; // Variable
+      var mostraridb = [];
+     
+    
+      window.updateImage = function() {
+        display.changed = true;
+      }
+
+        
+      setInterval(function(){
+        if (video.ended) video.play();
+        if (video.paused) return;
+        if (window.paused) return;
+        if (video.currentTime == video.duration) {
+          video.currentTime = 0;
+        }
+        if (video.currentTime == lastTime) return;
+        lastTime = video.currentTime;
+        videoCanvas.getContext('2d').drawImage(video,0,0); //superpone la imagen de camara en video canvas
+        ctx.drawImage(videoCanvas, 0,0,640,480);   //320,240);
+      
+    
+        videoTex.material.textures.Texture0.changed = true;
+    
+        canvas.changed = true;
+        display.changed = true;
+    
+    
+        //Proceso de deteccion de marcadores currId es el
+        //Numero de marcador
+        var threshold = 170;
+        var detected = detector.detectMarkerLite(raster, threshold); 
+        for (var idx = 0; idx<detected; idx++) {
+          var id = detector.getIdMarkerData(idx);
+          var currId;
+          
+          if (id.packetLength > 4) {
+            currId = -1;
+          }else{
+            currId=0;
+            for (var i = 0; i < id.packetLength; i++ ) {
+              currId = (currId << 8) | id.getPacketData(i);
+            }
+          }
+          //mostraridb[idx]=currId;
+          if (!pastResults[currId]) {
+            pastResults[currId] = {};
+          }
+          detector.getTransformMatrix(idx, resultMat);
+          pastResults[currId].age = 0;
+          pastResults[currId].transform = Object.asCopy(resultMat);
+        
+        }
+        //console.log(mostraridb);
+        
+        
+        //** quita figura cuando se retira tag *************************
+        for (var i in pastResults) {
+          var r = pastResults[i];
+          if (r.age > 1) {
+            delete pastResults[i];
+            //cubes[i].image.setImage(photos.rotate());
+          }
+          r.age++;
+        }
+        
+        
+        for (var i in cubes) cubes[i].display = false;
+        for (var i in pastResults) {
+         
+          //solo se ejecuta cuando logra leer un tag nuevo no visto antes, y se le asigna un foto
+          if (!cubes[i]) {  
+            var pivot = new Magi.Node();
+            pivot.transform = mat4.identity();
+            pivot.setScale(80);
+            var image = new Magi.Image();
+              image
+              .setAlign(image.centerAlign, image.centerAlign)
+              .setPosition(posix[i], posiy[i], posiz[i])
+              .setAxis(0,0,1)
+              .setAngle(Math.PI)
+              .setSize(Escalagraf[i]);
+            image.setImage = function(src) {
+              var img = E.canvas(320,320);//640,640. Tamaño de la foto a superpner en el tag
+              Magi.Image.setImage.call(this, img);
+              this.texture.generateMipmaps = false;
+              var self = this;
+              src.onload = function(){
+                var w = this.width, h = this.height;
+                var f = Math.min(320/w, 320/h);//640,640
+                w = (w*f);
+                h = (h*f);
+                img.getContext('2d').drawImage(this, (320-w)/2,(320-h)/2,w,h);//640, 640
+                self.texture.changed = true;
+                self.setSize(1.1*Math.max(w/h, h/w));
+              };
+              if (Object.isImageLoaded(src)) {
+                src.onload();
+              }
+            };
+            
+            image.setImage(photos[i]);
+            images.push(image);
+            pivot.image = image;
+            pivot.appendChild(image);
+            display.scene.appendChild(pivot);
+            cubes[i] = pivot;
+           
+          }
+          
+          
+          cubes[i].display = true;
+          var mat = pastResults[i].transform;
+          var cm = cubes[i].transform;
+          cm[0] = mat.m00;
+          cm[1] = -mat.m10;
+          cm[2] = mat.m20;
+          cm[3] = 0;
+          cm[4] = mat.m01;
+          cm[5] = -mat.m11;
+          cm[6] = mat.m21;
+          cm[7] = 0;
+          cm[8] = -mat.m02;
+          cm[9] = mat.m12;
+          cm[10] = -mat.m22;
+          cm[11] = 0;
+          cm[12] = mat.m03;
+          cm[13] = -mat.m13;
+          cm[14] = mat.m23;
+          cm[15] = 1;
+        }
+      }, 15);
+  
+    </script>
+    
+  </body>
+</html>

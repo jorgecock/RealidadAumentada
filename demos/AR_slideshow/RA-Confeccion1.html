@@ -1,0 +1,321 @@
+<html>
+  <head>
+  <script src="../../src/NyAs3Utils.js"></script>
+  <script src="../../src/FLARArrayUtil.js"></script>
+  <script src="../../src/FLARException.js"></script>
+  <script src="../../src/FLARMat.js"></script>
+  <script src="../../src/FLARRgbPixelReader.js"></script>
+  <script src="../../src/NyARHistogramAnalyzer.js"></script>
+  <script src="../../src/NyARPca2d.js"></script>
+  <script src="../../src/NyARRasterReader.js"></script>
+  <script src="../../src/NyARTypes.js"></script>
+  <script src="../../src/FLARRasterFilter.js"></script>
+  <script src="../../src/FLARTypes.js"></script>
+  <script src="../../src/NyARLabel.js"></script>
+  <script src="../../src/FLARLabeling.js"></script>
+  <script src="../../src/NyARParam.js"></script>
+  <script src="../../src/FLARParam.js"></script>
+  <script src="../../src/NyARRaster.js"></script>
+  <script src="../../src/FLARRaster.js"></script>
+  <script src="../../src/NyARCode.js"></script>
+  <script src="../../src/FLARCode.js"></script>
+  <script src="../../src/NyARMatch.js"></script>
+  <script src="../../src/NyARRasterAnalyzer.js"></script>
+  <script src="../../src/FLARRasterAnalyzer.js"></script>
+  <script src="../../src/NyARRasterFilter.js"></script>
+  <script src="../../src/NyARSquareDetect.js"></script>
+  <script src="../../src/FLARSquareDetect.js"></script>
+  <script src="../../src/NyARTransMat.js"></script>
+  <script src="../../src/FLARTransMat.js"></script>
+  <script src="../../src/NyARUtils.js"></script>
+  <script src="../../src/NyARIdMarker.js"></script>
+  <script src="../../src/NyARPickup.js"></script>
+  <script src="../../src/FLARProcessor.js"></script>
+  <script src="../../src/NyARDetector.js"></script>
+  <script src="../../src/FLARDetector.js"></script>
+  <script src="../../src/FLARIdMarkerDetector.js"></script>
+  <script src="../../src/NyARSingleMarkerProcesser.js"></script>
+  <script src="../../src/NyUtils.js"></script>
+  <script src="../magi.js"></script>
+  
+  <script>
+  
+  
+    
+  
+  
+  
+    window.onload = function() {
+      
+      
+      
+      
+      /**  dirfotos=[
+      "1_Ojaladora.jpg",
+      "2_Plana.jpg",
+      "3_Recubridora.jpg",
+      "4_Fileteadora.jpg",
+      "5_Botonadora.jpg",
+      "6_Fileteadora2.jpg",
+      "7_CortadoraCNC.jpg",
+      "8_Extendedora.jpg",
+      "9_TejedoraUnCabezal.jpg",
+      "10_Banda.jpg",
+      "11_Aguja.jpg",
+      "12_Hilo.jpg",
+      "13_Bordadora.jpg",
+      "14_Pantalla.jpg",
+      "15_Cerradora.jpg",
+      "16_Elastiquera.jpg",
+      "17_MaquinaDePespunte.jpg",
+      "18_Collarin.jpg",
+      "19_DosAgujas.jpg",
+      "20_DobleArrastre.jpg",
+      "21_TripleArrastre.jpg",
+      "22_PuntadaInvisible.jpg",
+      "23_ZigZag.jpg",
+      "23_PlanchaIndustria.jpg",
+      "25_Bastera.jpg",
+      "26_Atracadora.jpg",
+      "27_CerradoraCodo.jpg",
+      "28_Calderas.jpg",
+      "29_Pretinera.jpg",
+      "30_Enconadora.jpg",
+      "31_Dobladilladora.jpg"
+    ]; **/
+    
+    dirfotos=[
+      "0.png","1.png","2.png","3.jpg","4.gif","5.jpg","6.png","7.jpg","8.jpg","9.jpg",
+      "10.jpg","11.jpg","12.jpg","13.jpg","14.jpg","15.jpeg","16.jpg","17.jpg","18.png","19.jpg",
+      "20.jpg","21.png","22.jpg","23.jpg","24.jpg","25.jpg","26.png","27.jpg","28.jpeg","29.jpg",
+      "30.png","31.jpg","32.jpg","33.jpg","34.jpg","35.png","36.png","37.jpg","38.jpg","39.png",
+      "40.png","41.png","42.png","43.jpg","44.jpg","45.jpg","46.jpg","47.jpg","48.jpg","49.jpg",
+      "50.jpg","51.jpg","52.jpg","53.jpg","54.jpg","55.jpg","56.png","57.jpg","58.jpg","59.png",
+      "60.jpg","61.jpg","62.gif","63.png","64.jpg","65.jpg","66.jpg","67.jpg","68.jpg","69.jpg",
+      "70.jpg","71.jpg","72.jpg","73.jpg","74.jpg","75.jpg","76.jpg","77.gif","78.jpg","79.jpg",
+      "80.jpg","81.jpg","82.jpg","83.jpg","84.png","85.gif","86.gif","87.jpg","88.jpg","89.jpg",
+      "90.jpg","91.jpg","92.jpeg","93.jpg","94.jpg","95.png","96.png","97.jpg","98.jpg","99.jpg"
+    ]; 
+    
+    
+    photos = dirfotos.map(Image.load);
+    threshold = 170;
+    DEBUG = false;
+    
+     
+    // Crear video para leer de camara web
+    var video = document.createElement('video');
+    video.width = 640; //320
+    video.height = 480; //240
+    video.loop = true;
+    video.volume = 0;
+    video.autoplay = true;
+    video.style.display = 'none';
+    video.controls = true;
+    navigator.webkitGetUserMedia({'video': true},
+      function(stream) {
+        var url = webkitURL.createObjectURL(stream);
+        video.src = url;
+      },
+      function(error) { alert('Usted no tiene WebRTC webcam'); }
+    );
+    
+  
+    //**********canvas para superponer video capturado.
+    var canvas = document.createElement('canvas');
+    canvas.width = video.width;
+    canvas.height = video.height;
+    canvas.style.display = 'block';
+  
+    //*********Crea canvas para superponer imagenes
+    var videoCanvas = document.createElement('canvas');
+    videoCanvas.width = video.width;
+    videoCanvas.height = video.height;
+  
+    //***********Otro canvas para mostrar gráficas
+    var glCanvas = document.createElement('canvas');
+    glCanvas.width = video.width;
+    glCanvas.height = video.height;
+    var s = glCanvas.style;
+  
+    //**********Parametros JSARToolKit
+    var raster = new NyARRgbRaster_Canvas2D(canvas);
+    var param = new FLARParam(640,480); 
+    var resultMat = new NyARTransMatResult();
+    var detector = new FLARMultiIdMarkerDetector(param, 80);
+    detector.setContinueMode(true);
+    var ctx = canvas.getContext('2d');
+      
+      
+      
+     
+      document.body.appendChild(video);
+      document.body.appendChild(glCanvas);
+  
+      display = new Magi.Scene(glCanvas);
+      display.drawOnlyWhenChanged = true;
+      param.copyCameraMatrix(display.camera.perspectiveMatrix, 10, 10000);
+      display.camera.useProjectionMatrix = true;
+  
+      var videoTex = new Magi.FlipFilterQuad();
+      videoTex.material.textures.Texture0 = new Magi.Texture();
+      videoTex.material.textures.Texture0.image = videoCanvas;
+      videoTex.material.textures.Texture0.generateMipmaps = false;
+      display.scene.appendChild(videoTex);
+  
+      var times = [];
+      var pastResults = {};
+      var lastTime = 0;
+      var cubes = {};
+      var images = [];
+  
+  
+      window.updateImage = function() {
+        display.changed = true;
+      }
+      
+      
+      setInterval(function(){
+        if (video.ended) video.play();
+        if (video.paused) return;
+        if (window.paused) return;
+        if (video.currentTime == video.duration) {
+          video.currentTime = 0;
+        }
+        if (video.currentTime == lastTime) return;
+        lastTime = video.currentTime;
+        videoCanvas.getContext('2d').drawImage(video,0,0);
+        ctx.drawImage(videoCanvas, 0,0,640,480);   //320,240);
+        var dt = new Date().getTime();
+  
+        videoTex.material.textures.Texture0.changed = true;
+  
+        canvas.changed = true;
+        display.changed = true;
+  
+        var t = new Date();
+        var detected = detector.detectMarkerLite(raster, threshold);
+        
+        
+        for (var idx = 0; idx<detected; idx++) {
+          
+          var id = detector.getIdMarkerData(idx);
+          //read data from i_code via Marsial--Marshal経由で読み出す
+          var currId;
+          if (id.packetLength > 4) {
+            currId = -1;
+          }else{
+            currId=0;
+            //最大4バイト繋げて１個のint値に変換
+            for (var i = 0; i < id.packetLength; i++ ) {
+              currId = (currId << 8) | id.getPacketData(i);
+              //console.log("id[", i, "]=", id.getPacketData(i));
+            }
+          }
+          //console.log("ID=" + currId);
+          
+          //*********************************************************
+          if (!pastResults[currId]) {
+            pastResults[currId] = {};
+          }
+          detector.getTransformMatrix(idx, resultMat);
+          pastResults[currId].age = 0;
+          pastResults[currId].transform = Object.asCopy(resultMat);
+        }
+        //***************************
+        for (var i in pastResults) {
+          var r = pastResults[i];
+          if (r.age > 1) {
+            delete pastResults[i];
+            //cubes[i].image.setImage(photos.rotate());
+          }
+        r.age++;
+        }
+        for (var i in cubes) cubes[i].display = false;
+        for (var i in pastResults) {
+          if (!cubes[i]) {
+            var pivot = new Magi.Node();
+            pivot.transform = mat4.identity();
+            pivot.setScale(80);
+            var image = new Magi.Image();
+            image
+              .setAlign(image.centerAlign, image.centerAlign)
+              .setPosition(0, 0, 0)
+              .setAxis(0,0,1)
+              .setAngle(Math.PI)
+              .setSize(1.5);
+            image.setImage = function(src) {
+              var img = E.canvas(320,320);//640,640
+              Magi.Image.setImage.call(this, img);
+              this.texture.generateMipmaps = false;
+              var self = this;
+              src.onload = function(){
+                var w = this.width, h = this.height;
+                var f = Math.min(320/w, 320/h);//640,640
+                w = (w*f);
+                h = (h*f);
+                img.getContext('2d').drawImage(this, (320-w)/2,(320-h)/2,w,h);//640, 640
+                self.texture.changed = true;
+                self.setSize(1.1*Math.max(w/h, h/w));
+              };
+              if (Object.isImageLoaded(src)) {
+                src.onload();
+              }
+            };
+            image.setImage(photos.rotate());
+            images.push(image);
+            pivot.image = image;
+            pivot.appendChild(image);
+            display.scene.appendChild(pivot);
+            cubes[i] = pivot;
+          }
+          cubes[i].display = true;
+          var mat = pastResults[i].transform;
+          var cm = cubes[i].transform;
+          cm[0] = mat.m00;
+          cm[1] = -mat.m10;
+          cm[2] = mat.m20;
+          cm[3] = 0;
+          cm[4] = mat.m01;
+          cm[5] = -mat.m11;
+          cm[6] = mat.m21;
+          cm[7] = 0;
+          cm[8] = -mat.m02;
+          cm[9] = mat.m12;
+          cm[10] = -mat.m22;
+          cm[11] = 0;
+          cm[12] = mat.m03;
+          cm[13] = -mat.m13;
+          cm[14] = mat.m23;
+          cm[15] = 1;
+        }
+      }, 15);
+    }
+  </script>
+  
+  <style>
+    html {
+      background: white;
+      color: black;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      margin-top: 20px;
+      text-align: center;
+    }
+    #loading {
+      font-style: verdana;
+      font-size: 30px;
+      font-weight: bold;
+      font-family: Times;
+    }
+  </style>
+  
+</head>
+  <body>
+    <div id="loading">Aplicación de Realidad Aumentada</div>
+    <br>
+    <div>SENA, Gupo de investigación INAMOD, Centro de formación en diseño, confección y moda</div> 
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<script type="text/javascript" src="../js/swfobject.js"></script>
+<script type="text/javascript" src="../js/jsar.js"></script>
+<script type="text/javascript"><!--
+ 
+    var jsar;
+    var MARKER_CODE  = [ '../code/hiro.pat', '../code/emiliusvgs.pat', ];
+    var MARKER_TITLE = [ 'Aumentality', "Emiliusvgs" ];
+ 
+    function ondetected ( result ) {
+        jsar.clearHTML();
+        if ( ! result.detected ) return;
+ 
+        var base = jsar.getHTML();
+        for( var i=0; i<result.markers.length; i++ ) {
+            var marker = result.markers[i];
+ 
+ 
+            var div = document.createElement( 'div' );
+            div.style.fontFamily = 'Verdana';
+            div.style.position   = 'absolute';
+ 
+            div.style.color = "green";
+ 
+            var minx = marker.getLeft();
+            var miny = marker.getTop();
+            var maxy = marker.getBottom();
+            var size = Math.floor( (maxy - miny) / 6 );
+            div.style.left     = (minx+size*1)+'px';
+            div.style.top      = (miny+size*1)+'px';
+            div.style.fontSize = (size*1)+'px';
+ 
+ 
+            var title = MARKER_TITLE[marker.codeid];
+            var txt = document.createTextNode( title );
+            div.appendChild( txt );
+            base.appendChild( div );
+        }
+    }
+ 
+    function init () {
+        jsar = new JSAR( 'jsar_here' );
+        jsar.drawMarkerRect = false;
+        jsar.onDetected = ondetected;
+        jsar.onLost     = ondetected;
+        jsar.captureX   = 320;
+        jsar.captureY   = 240;
+        jsar.displayX   = 640;
+        jsar.displayY   = 480;
+        jsar.init();
+        jsar.setMarker( MARKER_CODE );
+    }
+ 
+    window.onload = init;
+--></script>
